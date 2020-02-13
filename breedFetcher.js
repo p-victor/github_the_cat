@@ -1,16 +1,19 @@
 const req = require('request');
-const breedName = process.argv.splice(2)[0];
+const URL = "https://api.thecatapi.com/v1/breeds/search?q="
 
-const breed = req.get(`https://api.thecatapi.com/v1/breeds/search?q=${breedName}`, (e, response, body) => {
-  if (e) {console.log(e)}
-  const breed = JSON.parse(body)[0];
-  if (breed) {
-    console.log(breed.description);
-  }
-  else {
-    console.log(`No species start with the letters ${breedName}`);
-  }
-});
+const fetchBreedDescription = (breedName, callback) => {
+  req.get(`${URL}${breedName}`, (error, _response, body) => {
+    const breed = JSON.parse(body || "{}")[0];
+    if (error) {
+      callback(error, breed);
+    }
+    if (breed) {
+      callback( error, breed.description);
+    }
+    else {
+      callback( `No species start with the letters ${breedName}`, breed);
+    }
+  });
+}
 
-// console.log(breedName);
-// console.log(breed)
+module.exports = { fetchBreedDescription };
